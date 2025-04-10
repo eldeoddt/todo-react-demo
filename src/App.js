@@ -6,24 +6,29 @@ import {Container, List, Paper} from "@mui/material";
 import AddTodo from './AddTodo';
 
 function App() {
-  const [items, setItems] = useState([
-    {
-      id: "0",
-      title: "hello world 1",
-      done: true
-    } ,
-    {
-      id: "1",
-      title: "hello world 2",
-      done: true
-    } 
-  ]);
+  // 빈 배열로 초기화
+  const [items, setItems] = useState([]);
 
   const addItem = (item) => {
     item.id = "ID-"+items.length; // key를 위한 id
     item.done = false; // done초기화
     setItems([...items, item]);
     console.log("items: ", items);
+  };
+
+  // app 내의 delete item
+  // filter 이용하여 매개변수로의 아이템 id와 다른 아이템만 골라낸다.
+  const deleteItem = (item) => {
+    const newItems = items.filter(e => (e.id !== item.id));
+    // setItems를 하면 item배열 상태 변화가 된다. -> App 컴포너트가 리렌더링된다.
+    // 지워지면 다시 그린다.
+    setItems([...newItems]); // 삭제 후 배열을 state 객체에 저장한다. 배열을 복제한다.
+  }; 
+
+  // 아이템 title을 수정하는 함수.
+  // 현재 갱신된 items 배열을 다시 상태 변수에 넣어준다. -> 상태 바뀜. 자식 쪽에서 바꿨기 때문에.
+  const editItem = () => {
+    setItems([...items]); // 리렌더링 발생
   };
 
   // 자동으로 html 태그를 자바스크립트 코드로 변환해줌.
@@ -33,7 +38,10 @@ function App() {
     <Paper style={{ margin: 16 }}> 
     {/* paper에 넣어준다. */}
       <List>
-      {items.map((item) =>(<Todo item={item} key={item.id}/>    
+      {items.map((item) => (
+        // todo 컴포넌트 생성. 시 editItem 함수를 넘겨준다.
+        <Todo item={item} key={item.id} 
+        editItem={editItem} deleteItem={deleteItem}/>    
       ))}
       </List> 
     </Paper>
@@ -43,7 +51,8 @@ function App() {
   return (
     <div className="App">
       <Container maxWidth="md">
-        <AddTodo />
+        {/* addItem? */}
+        <AddTodo addItem={addItem}/>
         <div className='TodoList'>
         {todoItems} 
       {/* 자식에게 값을 전달할때 props를 사용한다. */}
