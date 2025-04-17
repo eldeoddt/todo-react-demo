@@ -1,9 +1,17 @@
 import React, { useState } from "react";
-import { ListItem, ListItemText, InputBase, Checkbox, ListItemSecondaryAction, IconButton } from "@mui/material";
+import {
+  ListItem,
+  ListItemText,
+  InputBase,
+  Checkbox,
+  ListItemSecondaryAction,
+  IconButton,
+} from "@mui/material";
 import DeleteOutlined from "@mui/icons-material/DeleteOutlined";
 
 // props로 부모로부터 데이터 받을 수 있음.
-const Todo = (props) => { // 리액트 컴포넌트이다.
+const Todo = (props) => {
+  // 리액트 컴포넌트이다.
   // 모든 리액트 컴포넌트는 람다 함수 형태로 만든다.
   const [item, setItem] = useState(props.item); // 부모가 넘겨준 item 객체를 item 상태 변수가 가리킨다.
   // 유즈스테이트 사용하여 함수 배열을 반환한다.
@@ -17,8 +25,10 @@ const Todo = (props) => { // 리액트 컴포넌트이다.
 
   // title 수정 후 enter 누르면 readonly모드로 수정 불가하도록 한다.
   const turnOnReadOnly = (e) => {
-    if (e.key == "Enter") {
+    if (e.key === "Enter" && readOnly === false) {
       setReadOnly(true);
+      // 사용자가 수정을 마친 시점에 editItem을 호출한다.
+      editItem(item);
     }
   };
 
@@ -27,7 +37,7 @@ const Todo = (props) => { // 리액트 컴포넌트이다.
     setReadOnly(false);
   };
 
-  // todo에서 delete handler 
+  // todo에서 delete handler
   const deleteEventHandler = () => {
     deleteItem(item);
   };
@@ -36,27 +46,29 @@ const Todo = (props) => { // 리액트 컴포넌트이다.
   const editEventHandler = (e) => {
     // e.target.value : 이벤트를 발생한 시점의 수정된 값.
     // item.title : 부모로부터 받아온 아이템 에 대입.
-    item.title = e.target.value; 
-    editItem(); // 부모 App 에서 받아온 edititem 호출.
+    // item.title = e.target.value;
+    // editItem(); // 부모 App 에서 받아온 edititem 호출.
+    setItem({ ...item, title: e.target.value });
   };
 
   // check box 전환 함수. 값에 반영이 되게 한다.
   const checkboxEventHandler = (e) => {
     // e.target.checked : 이벤트가 발생한 시점의 수정된 체크 값
     // item. 들의 done값을 해당 값으로 설정한다.
+
+    // check box의 경우 체크 상태가 바뀔 때마다 edit item을 호출한다.
     item.done = e.target.checked;
     // 이것이 없으면 내부적으로는 값이 바뀌지만 화면 리렌더링이 안되어 화면에는 변화가 없다.
     // 화면에 변화가 없는 경우 리렌더링 여부를 확인해보자.
-    editItem(); // 부모 App 에서 받아온 editItem 을 호출하여 갱신된 item배열을 다시 넣는다. -> 리렌더링
+    editItem(item); // 부모 App 에서 받아온 editItem 을 호출하여 갱신된 item배열을 다시 넣는다. -> 리렌더링
   };
-
 
   return (
     <ListItem>
       {/* 체크박스 부분 */}
-      <Checkbox 
-      checked={item.done} 
-      onChange={checkboxEventHandler} // 체크박스 값이 수정될 때 값을 저장하는 함수를 호출한다.
+      <Checkbox
+        checked={item.done}
+        onChange={checkboxEventHandler} // 체크박스 값이 수정될 때 값을 저장하는 함수를 호출한다.
       />
       <ListItemText>
         {/* 머터리얼에서 입력을 위한 가장 간단한 것 inputBase */}
@@ -76,8 +88,7 @@ const Todo = (props) => { // 리액트 컴포넌트이다.
       </ListItemText>
       <ListItemSecondaryAction>
         {/* 삭제 버튼. deleteEventHandler와 연결한다. */}
-        <IconButton aria-label="Delete Todo"
-        onClick={deleteEventHandler}>
+        <IconButton aria-label="Delete Todo" onClick={deleteEventHandler}>
           <DeleteOutlined />
         </IconButton>
       </ListItemSecondaryAction>

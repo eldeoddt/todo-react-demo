@@ -1,14 +1,63 @@
 import logo from './logo.svg';
 import './App.css';
 import Todo from './Todo';
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import {Container, List, Paper} from "@mui/material";
 import AddTodo from './AddTodo';
+import { API_BASE_URL } from './app-config'; // app-config에서 작성한 url import
+
+import {call} from "./service/ApiService";
 
 function App() {
   // 빈 배열로 초기화
   const [items, setItems] = useState([]);
 
+  useEffect(() => {
+    // call 함수 호출
+    call("/todo", "GET", null) 
+    .then((response)=> setItems(response.data));
+    // 요청 정보를 담는다.
+
+  // call 적용 이전 내용
+  // fetch로 백엔드 데이터 요청.
+  // json 객체를 얻는다.
+
+  /* 
+  fetch(API_BASE_URL + "/todo", requestOptions)
+    .then((response) => response.json())
+    .then(
+      (response) => {
+        // data값을 state.items에 설정한다.
+        setItems(response.data); // 상태가 변경되어 리렌더링 발생.
+      },
+      (error) => {
+
+      }
+    );
+  */
+  }, []); // 빈 배열-> 최초 렌더링 시에만 콜백 함수가 실행됨.
+  // useeffect 콜백 함수, 디펜던시 배열. -> 배열값 변할때마다 렌더링됨
+
+  const addItem = (item) => {
+    // 백엔드에 item 추가
+    call("/todo", "POST", item)
+    .then((response)=>setItems(response.data)); // 상태 변수에 반영 => 리렌더링
+  };
+
+  const deleteItem = (item) => {
+    // 백엔드에 item 삭제 요청. delete
+    call("/todo", "DELETE", item)
+    .then((response)=>setItems(response.data));
+  };
+
+  const editItem = (item) => {
+    // 백엔드에 item 수정 요청. put
+    call("/todo", "PUT", item)
+    .then((response)=>setItems(response.data));
+  };
+
+  // call 적용 이전 함수
+  /* 
   const addItem = (item) => {
     item.id = "ID-"+items.length; // key를 위한 id
     item.done = false; // done초기화
@@ -30,6 +79,7 @@ function App() {
   const editItem = () => {
     setItems([...items]); // 리렌더링 발생
   };
+  */
 
   // 자동으로 html 태그를 자바스크립트 코드로 변환해줌.
   // app 밑에는 todo가 있음.
